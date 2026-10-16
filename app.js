@@ -5,6 +5,7 @@ thiết lập các middleware toàn cục và các route cơ sở.
 
 const express = require("express");
 const cors = require("cors");
+const contactsRouter = require("./app/routes/contact.route");
 /*
 require("express") & require("cors"): Nạp thư
 viện framework express và middleware cors đã cài
@@ -22,6 +23,11 @@ app.use(express.json());
 /*
 Middleware có sẵn của Express, tự động phân tích dữ liệu dạng JSON gửi
 lên trong phần body của request thành đối tượng JavaScript (req.body).
+*/
+app.use("/api/contacts", contactsRouter);
+/*
+app.use("/api/contacts", contactsRouter);: Mọi yêu cầu có đường dẫn bắt
+đầu bằng /api/contacts sẽ được chuyển tiếp cho contact.route.js xử lý.
 */
 
 app.get("/", (req, res) => {
