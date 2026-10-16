@@ -6,10 +6,7 @@ thiết lập các middleware toàn cục và các route cơ sở.
 const express = require("express");
 const cors = require("cors");
 const contactsRouter = require("./app/routes/contact.route");
-/*
-require("express") & require("cors"): Nạp thư
-viện framework express và middleware cors đã cài
-*/
+const ApiError = require("./app/api-error");
 
 const app = express(); // Khởi tạo một đối tượng ứng dụng Express.
 
@@ -29,6 +26,26 @@ app.use("/api/contacts", contactsRouter);
 app.use("/api/contacts", contactsRouter);: Mọi yêu cầu có đường dẫn bắt
 đầu bằng /api/contacts sẽ được chuyển tiếp cho contact.route.js xử lý.
 */
+
+// handle 404 response
+app.use((req, res, next) => {
+  /*
+  Code ở đây sẽ chạy khi không có route được định nghĩa nào
+  khớp với yêu cầu. Gọi next() để chuyển sang middleware xử lý lỗi
+  */
+  return next(new ApiError(404, "Resource not found"));
+});
+
+// define error-handling middleware last, after other app.use() and routes calls
+app.use((err, req, res, next) => {
+  /*
+  Middleware xử lý lỗi tập trung.Trong các đoạn code xử lý ở các
+  route, gọi next(error) sẽ chuyển về middleware xử lý lỗi này
+  */
+  return res.status(err.statusCode || 500).json({
+    message: err.message || "Internal Server Error",
+  });
+});
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to contact book application." });
